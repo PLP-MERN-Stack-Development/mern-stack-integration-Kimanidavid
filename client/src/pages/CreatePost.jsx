@@ -1,10 +1,11 @@
 import React from 'react';
+import CreatePostForm from '../components/createPostForm';
 
 function CreatePost() {
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Create New Post</h1>
-      <p>Create post form will go here</p>
+    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <h1 style={{ marginBottom: '2rem', textAlign: 'center' }}>Create New Post</h1>
+      <CreatePostForm />
     </div>
   );
 }

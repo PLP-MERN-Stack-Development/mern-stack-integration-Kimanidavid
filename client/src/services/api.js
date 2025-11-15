@@ -1,98 +1,53 @@
-// client/src/services/api.js
 import axios from 'axios';
 
-// Create Axios instance
+const API_BASE_URL = '/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-  headers: { 'Content-Type': 'application/json' }
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
-// Request interceptor for JWT authentication
-api.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+// Request interceptor to add auth token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-}, error => Promise.reject(error));
+);
 
-// Response interceptor for global error handling
+// Response interceptor to handle errors
 api.interceptors.response.use(
-  response => response,
-  error => {
+  (response) => response,
+  (error) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
-      localStorage.removeItem('user');
       window.location.href = '/login';
     }
     return Promise.reject(error);
   }
 );
 
-// ----------- Blog API Service ------------
-
 export const postService = {
-  // Fetch all posts
-  getAllPosts: async () => {
-    const res = await api.get('/posts');
-    return res.data;
-  },
-
-  // Fetch a post by ID
-  getPost: async id => {
-    const res = await api.get(`/posts/${id}`);
-    return res.data;
-  },
-
-  // Create a new post
-  createPost: async data => {
-    const res = await api.post('/posts', data);
-    return res.data;
-  },
-
-  // Update post by ID
-  updatePost: async (id, data) => {
-    const res = await api.put(`/posts/${id}`, data);
-    return res.data;
-  },
-
-  // Delete post
-  deletePost: async id => {
-    const res = await api.delete(`/posts/${id}`);
-    return res.data;
-  },
-
-  // Add a comment to a post
-  addComment: async (id, comment) => {
-    const res = await api.post(`/posts/${id}/comments`, comment);
-    return res.data;
-  }
+  getPosts: () => api.get('/posts'),
+  getPost: (id) => api.get(`/posts/${id}`),
+  createPost: (data) => api.post('/posts', data),
+  updatePost: (id, data) => api.put(`/posts/${id}`, data),
+  deletePost: (id) => api.delete(`/posts/${id}`),
+  addComment: (id, data) => api.post(`/posts/${id}/comments`, data),
 };
 
-// ----------- Auth API Service ------------
-
 export const authService = {
-  // Register new user
-  register: async data => {
-    const res = await api.post('/auth/register', data);
-    return res.data;
-  },
-
-  // Login user
-  login: async data => {
-    const res = await api.post('/auth/login', data);
-    if (res.data.token) {
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('user', JSON.stringify(res.data.user));
-    }
-    return res.data;
-  },
-
-  // Logout
-  logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  }
+  login: (data) => api.post('/auth/login', data),
+  register: (data) => api.post('/auth/register', data),
+  getProfile: () => api.get('/auth/me'),
 };
 
 export default api;
