@@ -2,7 +2,7 @@ const Post = require('../models/Post');
 
 exports.createPost = async (req, res) => {
   try {
-    const post = await Post.create({ ...req.body, author: req.user.id });
+    const post = await Post.create(req.body);
     res.status(201).json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -69,8 +69,7 @@ exports.addComment = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
     const comment = {
-      text: req.body.text,
-      author: req.user.id,
+      content: req.body.text,
       createdAt: new Date()
     };
     post.comments.push(comment);

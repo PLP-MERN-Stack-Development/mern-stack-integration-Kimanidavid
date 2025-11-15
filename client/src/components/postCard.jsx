@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 const PostCard = ({ post }) => {
   return (
     <div className="card">
@@ -6,7 +8,7 @@ const PostCard = ({ post }) => {
         <p className="card-text">{post.content}</p>
         <p className="card-text">
           <small className="text-muted">
-            Posted by {post.author.name} on {new Date(post.createdAt).toLocaleString()}
+            Posted by {post.author?.name || 'Anonymous'} on {new Date(post.createdAt).toLocaleString()}
           </small>
         </p>
         <Link to={`/posts/${post._id}`} className="btn btn-primary">

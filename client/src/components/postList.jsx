@@ -1,23 +1,45 @@
-/*************  ✨ Windsurf Command ⭐  *************/
-const PostList = ({ posts, loading }) => {
-  if (loading) {
-    return <div className="d-flex justify-content-center">
-      <div className="spinner-border text-primary" role="status">
-        <span className="visually-hidden">Loading...</span>
-      </div>
-    </div>;
-  }
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { postService } from "../services/api";
+import PostCard from "./postCard";
+import Button from "./common/Button";
+
+function AllPostsPage() {
+  const [posts, setPosts] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const response = await postService.getPosts();
+      setPosts(response.data);
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    }
+  };
+
+  const handleCreatePost = async () => {
+    try {
+      await postService.createPost({ title: "New Post", content: "This is a new post." });
+      // Fetch the latest posts after creating a new post
+      fetchPosts();
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
+  };
 
   return (
-    <div className="row gx-5">
+    <div>
+      <h1>All Posts</h1>
+      <Button onClick={handleCreatePost}>Create Post</Button>
       {posts.map((post) => (
-        <div key={post._id} className="col-md-4">
-          <PostCard post={post} />
-        </div>
+        <PostCard key={post._id} post={post} />
       ))}
     </div>
   );
-};
+}
 
-export default PostList;
-/*******  550b436a-b3ff-49b1-aec7-76a7c707573c  *******/
+export default AllPostsPage;

@@ -3,11 +3,11 @@ const { createPost, getPosts, getPost, updatePost, deletePost, addComment } = re
 const auth = require('../middleware/auth');
 const router = express.Router();
 
-router.post('/', auth, createPost);
+router.post('/', createPost);
 router.get('/', getPosts);
 router.get('/:id', getPost);
 router.put('/:id', auth, updatePost);
 router.delete('/:id', auth, deletePost);
-router.post('/:id/comments', auth, addComment);
+router.post('/:id/comments', addComment);
 
 module.exports = router;

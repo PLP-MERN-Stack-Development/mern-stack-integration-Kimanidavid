@@ -1,6 +1,5 @@
-/*************  ✨ Windsurf Command ⭐  *************/
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { postService } from '../services/api';
 import PostCard from '../components/postCard';
 
 const PostList = () => {
@@ -9,16 +8,21 @@ const PostList = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      const response = await axios.get('/api/posts');
-      setPosts(response.data);
-      setLoading(false);
+      try {
+        const response = await postService.getPosts();
+        setPosts(response.data);
+      } catch (error) {
+        console.error('Failed to fetch posts:', error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchPosts();
   }, []);
 
   return (
     <div className="container">
-      <h1 className="text-center">Blog Posts</h1>
+      <h1 className="text-center">Latest Posts</h1>
       {loading ? (
         <p>Loading...</p>
       ) : (
@@ -33,4 +37,3 @@ const PostList = () => {
 };
 
 export default PostList;
-/*******  930e39fa-d14e-4d0a-9cd9-fcf7d92962d2  *******/
